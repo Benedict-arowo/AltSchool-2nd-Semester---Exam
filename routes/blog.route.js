@@ -9,7 +9,7 @@ const {
 	getUserBlog,
 	updateBlog,
 } = require("../controllers/blog.controller");
-const CheckAuth = require("../middlewears/checkAuth");
+const CheckAuth = require("../middlewears/CheckAuth");
 const Router = express.Router();
 
 Router.route("/")
