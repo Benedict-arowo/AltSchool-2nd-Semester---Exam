@@ -1,7 +1,7 @@
 const { StatusCodes } = require("http-status-codes");
 const ErrorWithStatus = require("../middlewears/ErrorWithStatus");
 const Blog = require("../models/blog.model");
-const { checkFields } = require("../utils");
+const { checkFields, AVERAGE_WORDS_PER_MINUTE } = require("../utils");
 const winston = require("winston");
 
 orderByList = ["read_count", "reading_time", "updatedat", "createdat"];
@@ -63,8 +63,6 @@ const getBlogsService = async ({ limit = 20, page = 1, query }) => {
 	if (title) baseQuery.title = { $regex: title, $options: "i" };
 	if (tags) baseQuery.tags = { $in: tags };
 
-	// TODO: check the orderBy field to be one of the fields in the Blog model
-
 	if (orderBy && !orderByList.includes(orderBy.toLowerCase()))
 		throw new ErrorWithStatus(
 			"orderBy field is invalid",
@@ -99,9 +97,7 @@ const createBlogService = async ({ user, data }) => {
 		{ field: description, name: "description" },
 	]);
 
-	const read_time = Math.ceil(
-		body.length / process.env.AVERAGE_WORDS_PER_MINUTE
-	);
+	const read_time = Math.ceil(body.length / AVERAGE_WORDS_PER_MINUTE);
 
 	if (tags && !(tags instanceof Array))
 		throw new ErrorWithStatus(
@@ -194,8 +190,7 @@ const updateBlogService = async ({ id, data, user_id }) => {
 			body: body && body,
 			tags: tags && tags,
 			reading_time:
-				body &&
-				Math.ceil(body.length / process.env.AVERAGE_WORDS_PER_MINUTE),
+				body && Math.ceil(body.length / AVERAGE_WORDS_PER_MINUTE),
 			state: state && state.toUpperCase(),
 		},
 		{ new: true }

@@ -2,10 +2,17 @@ const jwt = require("jsonwebtoken");
 const ErrorWithStatus = require("./middlewears/ErrorWithStatus");
 const { StatusCodes } = require("http-status-codes");
 require("dotenv").config({});
+
+const REFRESH_TOKEN_EXPIRY = "7d";
+const ACCESS_TOKEN_EXPIRY = "1h";
+const AVERAGE_WORDS_PER_MINUTE = 215;
+
 /**
- * Checks if the required fields are present in an array of objects.
- * @param {Array} fields - The array of objects to check.
- * @returns {Array} - An array containing the names of the fields that are missing.
+ * Checks if the required fields are present in the given array of fields.
+ * Throws an error if any required field is missing.
+ *
+ * @param {Array} fields - The array of fields to be checked.
+ * @throws {ErrorWithStatus} Throws an error with status code 400 if any required field is missing.
  */
 const checkFields = (fields) => {
 	const err = [];
@@ -29,7 +36,7 @@ const checkFields = (fields) => {
  */
 const generateAccessToken = (payload) => {
 	return jwt.sign(payload, process.env.JWT_SECRET, {
-		expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
+		expiresIn: ACCESS_TOKEN_EXPIRY,
 	});
 };
 
@@ -41,7 +48,7 @@ const generateAccessToken = (payload) => {
  */
 const generateRefreshToken = (payload) => {
 	return jwt.sign(payload, process.env.JWT_SECRET, {
-		expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
+		expiresIn: REFRESH_TOKEN_EXPIRY,
 	});
 };
 
@@ -49,4 +56,7 @@ module.exports = {
 	checkFields,
 	generateAccessToken,
 	generateRefreshToken,
+	REFRESH_TOKEN_EXPIRY,
+	ACCESS_TOKEN_EXPIRY,
+	AVERAGE_WORDS_PER_MINUTE,
 };
