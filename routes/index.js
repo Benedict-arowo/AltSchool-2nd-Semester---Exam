@@ -5,8 +5,12 @@ const blogRouter = require("./blog.route");
 const ErrorHandler = require("../middlewears/ErrorHandler");
 
 const applyRoutes = (app) => {
+	app.set("view engine", "ejs");
+
 	app.use(morgan("dev"));
 	app.use(express.json());
+
+	app.get("/", (req, res) => res.render("index"));
 
 	app.use("/auth", userRouter);
 	app.use("/blog", blogRouter);

@@ -117,7 +117,7 @@ const createBlogService = async ({ user, data }) => {
 	}
 
 	try {
-		return await Blog.create({
+		const blog = await Blog.create({
 			title,
 			description,
 			body,
@@ -127,6 +127,11 @@ const createBlogService = async ({ user, data }) => {
 			read_count: 0,
 			state: "DRAFT",
 		});
+
+		return await Blog.findOne({ _id: blog._id }).populate(
+			"User",
+			"id first_name last_name email"
+		);
 	} catch (error) {
 		if (error.message.includes("E11000"))
 			throw new ErrorWithStatus(
