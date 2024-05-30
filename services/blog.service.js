@@ -3,6 +3,7 @@ const ErrorWithStatus = require("../middlewears/ErrorWithStatus");
 const Blog = require("../models/blog.model");
 const { checkFields, AVERAGE_WORDS_PER_MINUTE } = require("../utils");
 const winston = require("winston");
+const redisClientPromise = require("../redisClient");
 
 orderByList = ["read_count", "reading_time", "updatedat", "createdat"];
 
@@ -56,6 +57,7 @@ const getBlogService = async ({ id, user }) => {
 
 const getBlogsService = async ({ limit = 20, page = 1, query }) => {
 	const { author, title, tags, orderBy, orderDirection } = query;
+
 	let baseQuery = {};
 	let sortCriteria = {};
 
@@ -79,6 +81,7 @@ const getBlogsService = async ({ limit = 20, page = 1, query }) => {
 			.limit(limit)
 			.skip((page - 1) * limit)
 			.populate("author", "id first_name last_name email");
+
 		return blog;
 	} catch (error) {
 		throw new ErrorWithStatus(

@@ -52,6 +52,42 @@ const generateRefreshToken = (payload) => {
 	});
 };
 
+function constructCacheKey({ limit, page, query }) {
+	const { author, title, tags, orderBy, orderDirection } = query;
+
+	// Normalize and encode parameters
+	const encodedLimit = `limit:${limit}`;
+	const encodedPage = `page:${page}`;
+	const encodedAuthor = author ? `author:${encodeURIComponent(author)}` : "";
+	const encodedTitle = title ? `title:${encodeURIComponent(title)}` : "";
+	const encodedTags = tags
+		? `tags:${
+				Array.isArray(tags)
+					? tags.map(encodeURIComponent).join(",")
+					: tags
+		  }`
+		: "";
+	const encodedOrderBy = orderBy ? `orderBy:${orderBy.toLowerCase()}` : "";
+	const encodedOrderDirection = orderDirection
+		? `orderDirection:${orderDirection.toLowerCase()}`
+		: "";
+
+	// Concatenate parts with hyphen as delimiter
+	const keyParts = [
+		encodedLimit,
+		encodedPage,
+		encodedAuthor,
+		encodedTitle,
+		encodedTags,
+		encodedOrderBy,
+		encodedOrderDirection,
+		"getAllBlogs",
+	];
+
+	// Filter out empty parts and join with hyphen
+	return keyParts.filter((part) => part).join("-");
+}
+
 module.exports = {
 	checkFields,
 	generateAccessToken,
@@ -59,4 +95,5 @@ module.exports = {
 	REFRESH_TOKEN_EXPIRY,
 	ACCESS_TOKEN_EXPIRY,
 	AVERAGE_WORDS_PER_MINUTE,
+	constructCacheKey,
 };
